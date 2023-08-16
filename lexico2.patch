@@ -1,0 +1,72 @@
+Index: lexica.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/lexica.py b/lexica.py
+--- a/lexica.py	
++++ b/lexica.py	(date 1692189360163)
+@@ -3,7 +3,11 @@
+ import token
+ from enum import Enum
+ 
+-TIPOCARAC = Enum('TIPOCARAC'['ALFABETICO','NUMERICO', 'ESPECIAL', 'UNDERLINE'])
++class TIPOCARAC(Enum):
++    ALFABETICO = 1
++    NUMERICO = 2
++    ESPECIAL = 3
++    UNDERLINE = 4
+ 
+ class Lexica:
+ 
+@@ -28,21 +32,32 @@
+                 for caractere in linha:
+ 
+                     if caractere.isalpha():
+-                        tipo = TIPOCARAC(1)
++                        tipo = TIPOCARAC.ALFABETICO
+                     elif caractere.isnumeric():
+-                        tipo = TIPOCARAC(2)
++                        tipo = TIPOCARAC.NUMERICO
+                     elif caractere == '_':
+-                        tipo = TIPOCARAC(4)
++                        tipo = TIPOCARAC.UNDERLINE
+                     else:
+-                        tipo = TIPOCARAC(3)
+-
+-
+-                if tipo == TIPOCARAC()
+-
+-                if caractere in delimitadores.DELIMITADORES:
+-                   proxToken = token.Token(nLinha, nColuna, delimitadores.DELIMITADORES[caractere], caractere,
+-                                           "teste")
+-                   self.imprimirToken(proxToken)
++                        tipo = TIPOCARAC.ESPECIAL
++
++
++                if tipo == TIPOCARAC.ALFABETICO or tipo == TIPOCARAC.UNDERLINE or tipo == TIPOCARAC.NUMERICO:
++                    palavra += caractere
++
++                else:
++                    if caractere in delimitadores.LOGICO:
++                        proxToken = token.Token(nLinha, nColuna, delimitadores.LOGICO[caractere], caractere,
++                                                "logico")
++                    elif caractere in delimitadores.DELIMITADORES:
++                        proxToken = token.Token(nLinha, nColuna, delimitadores.DELIMITADORES[caractere], caractere,
++                                                "delimitador")
++                    elif caractere in delimitadores.ATRIBUICAO:
++                        proxToken = token.Token(nLinha, nColuna, delimitadores.ATRIBUICAO[caractere], caractere, 
++                                               "atribuicap")
++                self.imprimirToken(proxToken)
++                if caractere in delimitadores.DELIMITADORES:
++
++
+ 
+                 elif caractere == " ":
+                     if palavra not in palavraReservada.TOKENS and palavra.isalnum():
+@@ -53,5 +68,3 @@
+                             self.imprimirToken(proxToken)
+                         palavra = ""
+ 
+-                else:
+-                        palavra += caractere
