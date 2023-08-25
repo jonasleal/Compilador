@@ -3,6 +3,8 @@ func int teste ( int x , bool y, int z)
 {
 	var int temp;
 	temp = 10;
+	temp=20;
+	temp=temp;
 	enquanto ( temp > 0 ) 
 {
 temp = temp - 1;		
