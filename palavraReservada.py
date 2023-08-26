@@ -1,45 +1,29 @@
-# Definição dos tokens
-TOKENS = {
-    'bool': 'TIPO',
-    'true': 'TIPO_BOOL',
-    'false': 'TIPO_BOOL',
-    'int': 'TIPO',
-    'var': 'VAR',
-    'func': 'DECLARACAO_FUNCAO',
-    'proc': "DECLARACAO_PROCEDIMENTO",
-    'se': 'SE',
-    'senao': 'SE_NAO',
-    'enquanto': 'ENQUANTO',
-    'imprimir': 'IMPRIMIR',
-    'parar': 'PARAR',
-    'continue': 'CONTINUE',
-    'retorno': 'RETORNO',
-    'id': 'ID'}
-
-DELIMITADORES = {
-    ';': 'PONTO_VIRGULA',
-    '(': 'PARENT_ESQ',
-    ')': 'PARENT_DIR',
-    '{': 'CHAVE_ESQ',
-    '}': 'CHAVE_DIR',
-    ',': 'VIRGULA',
-    '+': 'MAIS',
-    '-': 'MENOS',
-    '*': 'MULTIPLICAR',
-    '/': 'DIVIDIR'
-
-}
-
-LOGICO = {
-    '==': 'IGUAL',
-    '!=': 'DIFERENTE',
-    '>': 'MAIOR_QUE',
-    '>=': 'MAIOR_IGUAL',
-    '<': 'MENOR_QUE',
-    '<=': 'MENOR_IGUAL',
-    '!': 'NEGACAO'
-}
-
-ATRIBUICAO = {
-    '=': 'ATRIBUICAO'
-}
+#Palavras reservadas que compõe a linguagem
+TOKEN_TYPE = [
+    ("TIPO", r"int|bool"),
+    ("NUM", r"[0-9]+"),
+    ("TIPO_BOOL", r"true|false"),
+    ("TIPO_INT", r"0|[1-9][0-9]*"),
+    ("OP_ARITIMETICO", r"\+|\-|\*|\/"),
+    ("OP_BOOLEANO", r"==|!=|>|>=|<|<="),
+    ("PONTO_VIRGULA", r";"),
+    ("VIRGULA", r","),
+    ("PARENT_ESQ", r"\("),
+    ("PARENT_DIR", r"\)"),
+    ("CHAVE_ESQ", r"\{"),
+    ("CHAVE_DIR", r"\}"),
+    ("ATRIBUICAO", r"="),
+    ("ESPACO_BRANCO", r"\s"),
+    ("RETORNO", r"retorno"),
+    ("SE", r"se"),
+    ("SENAO", r"senao"),
+    ("ENQUANTO", r"enquanto"),
+    ("IMPRIMIR", r"imprimir"),
+    ("PARAR", r"parar"),
+    ("CONTINUE", r"continue"),
+    ("DECLARACAO_FUNCAO", r"func"),
+    ("DECLARACAO_PROCEDIMENTO", r"proc"),
+    ("DECLARACAO_VARIAVEL", r"var"),
+    ("EOF", r"$"),
+    ("ID", r"[a-zA-Z_][a-zA-Z0-9_]*"),
+]

@@ -1,29 +1,26 @@
+import re
 import palavraReservada
-import meuToken
-from enum import Enum
-
-
-class TIPOCARAC(Enum):
-    ALFABETICO = 1
-    NUMERICO = 2
-    ESPECIAL = 3
-    UNDERLINE = 4
-
 
 class Lexica:
 
-    def __init__(self, nomeArq):
-        self.nomeArq = nomeArq
+    def buscarTokens(input_text):
+        tokens = []
+        posicao = 0
 
-    def imprimirToken(self, tk: meuToken.Token):
-        print(
-            f"Linha: {tk.linha}, Coluna: {tk.coluna}, Tipo: {tk.tipo}, Palavra: {tk.palavra}")
+        while posicao < len(input_text):
+            encontrado = None
+            for token_type, padrao in palavraReservada.TOKEN_TYPE:
+                regex = re.compile(padrao)
+                encontrado = regex.match(input_text, posicao)
+                if encontrado:
+                    value = encontrado.group(0)
+                    if token_type != "ESPACO_BRANCO":
+                        tokens.append((token_type, value))
+                    break
+            if not encontrado:
+                raise ValueError(f"Invalid character: {input_text[posicao]}")
+            posicao = encontrado.end()
 
-    def verificar(self):
-        with open(self.nomeArq, 'r') as arquivo:
-            linhas = arquivo.readlines()
-            nLinha = 0
-
-
-
+        tokens.append(("EOF", ""))
+        return tokens
 
