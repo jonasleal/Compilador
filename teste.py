@@ -1,5 +1,4 @@
-from enum import Enum
+import palavraReservada as PR
 
-TIPO = Enum('TIPO', ['TIPO1', 'TIPO2', 'TIPO3'])
 
-print("2te_dsa2".isidentifier())
+print("TIPO_BOOL" in PR.VALOR_LITERAL)

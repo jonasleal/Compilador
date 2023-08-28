@@ -1,11 +1,22 @@
-#Palavras reservadas que compõe a linguagem
-TOKEN_TYPE = [
-    ("TIPO", r"int|bool"),
-    ("NUM", r"[0-9]+"),
+# Palavras reservadas que compõe a linguagem
+
+TOKEN_TIPO = [
+    ("INT", r"int"),
+    ("BOOL", r"bool"),
+
+]
+
+VALOR_LITERAL = [
     ("TIPO_BOOL", r"true|false"),
-    ("TIPO_INT", r"0|[1-9][0-9]*"),
-    ("OP_ARITIMETICO", r"\+|\-|\*|\/"),
+    ("TIPO_INT", r"[0-9]+"),
+]
+
+TOKEN_OPERADORES = [
     ("OP_BOOLEANO", r"==|!=|>|>=|<|<="),
+    ("OP_ARITIMETICO", r"\+|\-|\*|\/"),
+]
+
+TOKEN_DELIMITADOR = [
     ("PONTO_VIRGULA", r";"),
     ("VIRGULA", r","),
     ("PARENT_ESQ", r"\("),
@@ -13,7 +24,17 @@ TOKEN_TYPE = [
     ("CHAVE_ESQ", r"\{"),
     ("CHAVE_DIR", r"\}"),
     ("ATRIBUICAO", r"="),
+
+]
+
+TOKEN_IGNORADOS = [
+    ("QUEBRA_LINHA", r"\n"),
     ("ESPACO_BRANCO", r"\s"),
+
+]
+
+TOKEN_PALAVRA = [
+
     ("RETORNO", r"retorno"),
     ("SE", r"se"),
     ("SENAO", r"senao"),
@@ -27,3 +48,11 @@ TOKEN_TYPE = [
     ("EOF", r"$"),
     ("ID", r"[a-zA-Z_][a-zA-Z0-9_]*"),
 ]
+
+TOKENS_GRAMATICA = TOKEN_IGNORADOS + TOKEN_TIPO + VALOR_LITERAL + TOKEN_OPERADORES + TOKEN_DELIMITADOR + TOKEN_PALAVRA
+
+def getOperadores():
+    operadores = []
+    for token_type, valor in TOKEN_OPERADORES:
+        operadores.append(token_type)
+    return operadores
