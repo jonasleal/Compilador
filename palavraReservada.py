@@ -6,9 +6,12 @@ TOKEN_TIPO = [
 
 ]
 
-VALOR_LITERAL = [
-    ("TIPO_BOOL", r"true|false"),
+VALOR_NUMERICO = [
     ("TIPO_INT", r"[0-9]+"),
+]
+
+VALOR_BOOL = [
+    ("TIPO_BOOL", r"true|false"),
 ]
 
 TOKEN_OPERADORES = [
@@ -36,8 +39,8 @@ TOKEN_IGNORADOS = [
 TOKEN_PALAVRA = [
 
     ("RETORNO", r"retorno"),
-    ("SE", r"se"),
     ("SENAO", r"senao"),
+    ("SE", r"se"),
     ("ENQUANTO", r"enquanto"),
     ("IMPRIMIR", r"imprimir"),
     ("PARAR", r"parar"),
@@ -48,7 +51,7 @@ TOKEN_PALAVRA = [
     ("EOF", r"$"),
     ("ID", r"[a-zA-Z_][a-zA-Z0-9_]*"),
 ]
-
+VALOR_LITERAL = VALOR_BOOL + VALOR_NUMERICO
 TOKENS_GRAMATICA = TOKEN_IGNORADOS + TOKEN_TIPO + VALOR_LITERAL + TOKEN_OPERADORES + TOKEN_DELIMITADOR + TOKEN_PALAVRA
 
 def getOperadores():
