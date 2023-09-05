@@ -1,8 +1,21 @@
+from palavraReservada import DEL_ESCOPO
+
+
 class NoTipo:
     def __init__(self, valor, linha):
         self.valor = valor
         self.linha = linha
         self.escopo = []
+
+    def getEscopoSTR(self) -> str:
+        assinatura = "" + DEL_ESCOPO
+        i = 1
+        for local in self.escopo:
+            assinatura += local
+            if i < len(self.escopo):
+                assinatura += DEL_ESCOPO
+                i += 1
+        return assinatura
 
     @staticmethod
     def resolve(token_type, valor, linha):
@@ -19,6 +32,10 @@ class NoTipo:
 
 
 class NoTipoId(NoTipo):
+
+    def __init__(self, valor, linha):
+        super().__init__(valor, linha)
+        self.tipo = None
 
     def __str__(self) -> str:
         return self.valor
@@ -47,6 +64,16 @@ class NoDeclaracaoVariavel:
     def __str__(self) -> str:
         return f"{self.tipo.__str__()}"
 
+    def getEscopoSTR(self) -> str:
+        assinatura = "" + DEL_ESCOPO
+        i = 1
+        for local in self.escopo:
+            assinatura += local
+            if i < len(self.escopo):
+                assinatura += DEL_ESCOPO
+                i += 1
+        return assinatura
+
 
 class NoAtribuicao:
     def __init__(self, tipo: NoTipo, id: str, valor, linha):
@@ -64,7 +91,7 @@ class NoParametro:
         self.escopo = []
 
     def __str__(self) -> str:
-        return NoTipo.resolve(self.tipo, self.valor, self.linha).__str__()
+        return self.tipo.__str__()
 
 
 class NoChamadaFuncProc:
@@ -82,18 +109,15 @@ class NoChamadaFuncProc:
             if (filhos > 0):
                 filhos -= 1
                 parametros += ","
-        if self.retorno == None:
-            return f"{self.id}({parametros})"
-        else:
-            return f"{self.retorno} {self.id}({parametros})"
 
+        return f"{self.id}({parametros})"
 
 
 class NoDeclaracaoFuncao:
-    def __init__(self, retorno: NoTipo, id: str, parametros, linha):
+    def __init__(self, retorno: NoTipo, id: str, parametros: list[NoDeclaracaoVariavel], linha):
         self.id = id
-        self.parametros = parametros
-        self.retorno = retorno
+        self.parametros: list[NoDeclaracaoVariavel] = parametros
+        self.retorno: NoTipo = retorno
         self.linha = linha
         self.escopo = []
 
@@ -154,8 +178,9 @@ class NoImprimir:
 
 class NoSe:
     def __init__(self, condicao, linha, casoContario=None):
+
         self.condicao = condicao
-        self.casoContrario: NoSeNao = casoContario
+        self.casoContrario: AST = casoContario
         self.linha = linha
         self.escopo = []
 

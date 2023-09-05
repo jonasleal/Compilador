@@ -1,5 +1,7 @@
 # Palavras reservadas que compõe a linguagem
 
+DEL_ESCOPO = " | "  # Delimitador de escopo
+
 TOKEN_TIPO = [
     ("INT", r"int"),
     ("BOOL", r"bool"),

@@ -29,6 +29,20 @@ class Semantica:
                 self.declaracaoFuncao(no.tipo)
                 local.append(no.tipo.__str__())
                 self.analizar(no.filhos, local)
+                if not (no.tipo.retorno is None):
+                    if isinstance(no.tipo.retorno, NoTipo):
+                        declaracao = self.tabelaSimbolos.getSimbolo(no.tipo.retorno.valor, local)
+                        if not (declaracao is None):
+                            no.tipo.retorno.escopo = declaracao.escopo
+                        else:
+                            self.listaErros.append(
+                                f"linha: {no.tipo.retorno.linha}, variavel '{no.tipo.retorno.valor}' não declarada.")
+
+                    elif isinstance(no.tipo.retorno, NoExpressaoAritimetica):
+                        self.expressaoAritimetica(no.tipo.retorno, local)
+                    elif isinstance(no.tipo.retorno, NoExpressaoBool):
+                        self.expressaoBooleana(no.tipo.retorno, local)
+
             elif isinstance(no.tipo, NoDeclaracaoProcedimento):
                 self.declaracaoProcedimento(no.tipo)
                 local.append(no.tipo.__str__())
@@ -52,6 +66,8 @@ class Semantica:
     def declaracaoVariavel(self, variavel: NoDeclaracaoVariavel, escopo: list[str]):
         if self.tabelaSimbolos.getSimbolo(variavel.id, escopo) is None:
             variavel.escopo = escopo
+            variavel.tipo.escopo = escopo
+            variavel.tipo.valor = variavel.id
             self.tabelaSimbolos.addSimbolo(variavel.id, variavel, escopo)
         else:
             self.listaErros.append(f"linha: {variavel.linha}, variavel '{variavel.id}' ja declarada.")
@@ -66,6 +82,8 @@ class Semantica:
                 self.listaErros.append(f"linha: {tipoA.linha}, variavel '{tipoA.valor}' não declarada.")
             else:
                 tipoAfim = declaracao.tipo
+                tipoA.escopo = declaracao.escopo
+                tipoA.tipo = tipoAfim
         else:
             tipoAfim = tipoA
 
@@ -75,6 +93,8 @@ class Semantica:
                 self.listaErros.append(f"linha: {tipoB.linha}, variavel '{tipoB.valor}' não declarada.")
             else:
                 tipoBfim = declaracao.tipo
+                tipoB.escopo = declaracao.escopo
+                tipoB.tipo = tipoBfim
         else:
             tipoBfim = tipoB
 
@@ -89,8 +109,10 @@ class Semantica:
         declaracao = self.tabelaSimbolos.getSimbolo(varAtribuicao.id, escopo)
         # 3 - Verificar variavel não declarada
         if declaracao is None:
+
             self.listaErros.append(f"linha: {varAtribuicao.linha}, variavel '{varAtribuicao.id}' não declarada.")
             return
+        declaracao.tipo.escopo = declaracao.escopo
         varAtribuicao.tipo = declaracao.tipo
 
         # 2 - Verificar tipos
@@ -102,8 +124,9 @@ class Semantica:
             print(f"Expressao '{varAtribuicao.valor}' na linha {varAtribuicao.linha} esta correta: {eIgual}")
         elif isinstance(varAtribuicao.valor, NoChamadaFuncProc):
             self.chamadaFuncProc(varAtribuicao.valor)
-            eIgual = self.verificarTipos(varAtribuicao.tipo, varAtribuicao.valor.retorno, escopo)
+            eIgual = self.verificarTipos(varAtribuicao.tipo, varAtribuicao.valor.retorno.tipo, escopo)
             print(f"A atribuição '{varAtribuicao.valor}' na linha {varAtribuicao.linha} esta correta: {eIgual}")
+
         else:
             eIgual = self.verificarTipos(varAtribuicao.tipo, varAtribuicao.valor, escopo)
             print(f"A atribuição '{varAtribuicao.valor}' na linha {varAtribuicao.linha} esta correta: {eIgual}")
@@ -122,6 +145,7 @@ class Semantica:
             escopo.append(assinatura)
             for parametro in funcao.parametros:
                 self.declaracaoVariavel(parametro, escopo)
+
         else:
             self.listaErros.append(f"linha: {funcao.linha}, função ou procedimento com id '{assinatura}' ja declarado.")
 
@@ -147,12 +171,11 @@ class Semantica:
         if declaracaoFunc is None:
             self.listaErros.append(
                 f"linha: {funcao.linha}, função ou procedimento com id '{assinatura}' não foi declarado.")
-        funcao.retorno = declaracaoFunc.retorno
+        declaracaoVarRet = self.tabelaSimbolos.getSimbolo(declaracaoFunc.retorno.valor, declaracaoFunc.retorno.escopo)
+        funcao.retorno = declaracaoVarRet
         return funcao.retorno
 
     def imprimir(self, saida: NoImprimir, escopo):
-        # 1 - Analizar escopo
-
         saidaValida = False
         # 2 - Verificar tipos
         if isinstance(saida.tipo, NoTipoBool) or isinstance(saida.tipo, NoTipoInt):

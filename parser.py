@@ -54,6 +54,7 @@ class Parser:
         self.consumir("DECLARACAO_VARIAVEL")
         tipo = self.tipo()
         id = self.tokenAtual.valor
+        tipo.valor = self.tokenAtual.valor
         linha = self.tokenAtual.linha
         self.consumir("ID")
         self.consumir("PONTO_VIRGULA")
@@ -74,11 +75,13 @@ class Parser:
     def declaracao_funcao(self):
         self.consumir("DECLARACAO_FUNCAO")
         linha = self.tokenAtual.linha
-        tipoRetorno = self.tipo()
+        self.tipo()
         id, parametros = self.cabecalho()
         corpo = []
-        self.corpo_funcao(corpo)
-        return AST(NoDeclaracaoFuncao(tipoRetorno, id, parametros, linha), corpo)
+        retorno = self.corpo_funcao(corpo)
+        if retorno is None:
+            self.erro("RETORNO")
+        return AST(NoDeclaracaoFuncao(retorno, id, parametros, linha), corpo)
 
     def declaracao_procedimento(self):
         self.consumir("DECLARACAO_PROCEDIMENTO")
@@ -149,12 +152,16 @@ class Parser:
         self.consumir("PARENT_ESQ")
         while self.tokenAtual.token_type != "PARENT_DIR":
             if self.tokenAtual.token_type == "ID":
-                parametros.append(NoParametro(self.tokenAtual.valor, self.tokenAtual.token_type, self.tokenAtual.linha))
+                parametros.append(NoParametro(
+                    self.tokenAtual.valor, NoTipo.resolve(self.tokenAtual.token_type,self.tokenAtual.valor,
+                                                          self.tokenAtual.linha ), self.tokenAtual.linha))
                 self.consumir(self.tokenAtual.token_type)
             else:
                 for token_type, valor in PR.VALOR_LITERAL:
                     if self.tokenAtual.token_type == token_type:
-                        parametros.append(NoParametro(self.tokenAtual.valor, self.tokenAtual.token_type, self.tokenAtual.linha))
+                        parametros.append(NoParametro(
+                            self.tokenAtual.valor, NoTipo.resolve(self.tokenAtual.token_type, self.tokenAtual.valor,
+                                                                  self.tokenAtual.linha), self.tokenAtual.linha))
                         self.consumir(token_type)
             if self.tokenAtual.token_type == "VIRGULA":
                 self.consumir("VIRGULA")
@@ -297,10 +304,9 @@ class Parser:
         msg += "OP_BOOLEANO, OP_ARITIMETICO"
         self.erro(msg)
 
-    #REVISAR
+
     def retorno(self):
         self.consumir("RETORNO")
-        valor = None
         if self.tokenAtual.token_type == "ID" and self.listaTokens.lookAHead() == "PARENT_ESQ":
             valor = self.chamada_func_proc()
         else:
